@@ -21,11 +21,11 @@ public class VentanaJuego extends JFrame {
 	CocheJuego miCoche;        // Coche del juego
 	MiRunnable miHilo = null;  // Hilo del bucle principal de juego	
 	boolean[] booleanos;
-	JLabel estrellasAtrapadas;
-	JLabel estrellasDejadas;
+//	JLabel estrellasAtrapadas;
+//	JLabel estrellasDejadas;
 	int fallos = 0;
 	int cogidos = 0;
-	JPanel mensaje; 
+	JLabel mensaje; 
 
 	/** Constructor de la ventana de juego. Crea y devuelve la ventana inicializada
 	 * sin coches dentro
@@ -35,9 +35,9 @@ public class VentanaJuego extends JFrame {
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		// Creación contenedores y componentes
 		pPrincipal = new JPanel();
-		mensaje = new JPanel();
-		estrellasAtrapadas = new JLabel();
-		estrellasDejadas= new JLabel();
+		mensaje = new JLabel();
+//		estrellasAtrapadas = new JLabel();
+//		estrellasDejadas= new JLabel();
 		booleanos = new boolean[4];
 //		JPanel pBotonera = new JPanel();
 //		JButton bAcelerar = new JButton( "Acelera" );
@@ -55,8 +55,8 @@ public class VentanaJuego extends JFrame {
 //		pBotonera.add( bGiraDer );
 //		add( pBotonera, BorderLayout.SOUTH );
 		// Formato de ventana
-		mensaje.add(estrellasAtrapadas);
-		mensaje.add(estrellasDejadas);
+//		mensaje.add(estrellasAtrapadas);
+//		mensaje.add(estrellasDejadas);
 		add( mensaje, BorderLayout.SOUTH );
 		setSize( 500, 500 );
 		setResizable( false );
@@ -205,37 +205,19 @@ public class VentanaJuego extends JFrame {
 	 */
 	class MiRunnable implements Runnable {
 		boolean sigo = true;
+		double segundos;
 		@Override
 		public void run() {
 			// Bucle principal forever hasta que se pare el juego...
-			double segundos=0;
-			estrellasDejadas.setText(estrellasDejadas.getText() + "Fallos = " + fallos );
-			estrellasAtrapadas.setText(estrellasAtrapadas.getText() + "Puntuación = " + cogidos );
+			
+//			estrellasDejadas.setText(estrellasDejadas.getText() + "Fallos = " + fallos );
+//			estrellasAtrapadas.setText(estrellasAtrapadas.getText() + "Puntuación = " + cogidos );
 			
 			while (sigo) {
 				// Mover coche
 				miCoche.mueve( 0.040 );
-				fallos=miMundo.quitaYRotaEstrellas(6);
-				cogidos = miMundo.choquesConEstrellas();
-				
-				if(fallos==10){
-					acaba();
-					//custom title, custom icon
-					JOptionPane.showMessageDialog(pPrincipal, "GAME OVER", "Has dejado escapar 10 estrellas",JOptionPane.INFORMATION_MESSAGE);
-					pPrincipal.setVisible(false);						
-				}
 				
 				
-				if (segundos>=1.2){
-					
-					miMundo.creaEstrella();
-					miMundo.quitaYRotaEstrellas(6);
-					segundos=0.0;
-				} else{
-					
-					segundos = segundos + 0.040;
-					miMundo.quitaYRotaEstrellas(6);
-				}
 				double rozamiento = miMundo.calcFuerzaRozamiento(miCoche.getMasa(), miCoche.getCoefRozSuelo(), miCoche.getCoefRozAire(), miCoche.getVelocidad());
 
 				if(booleanos[0]==true){
@@ -265,9 +247,25 @@ public class VentanaJuego extends JFrame {
 					miCoche.gira(-10);
 				}
 				
+				if (segundos>=1.2){
+					
+					miMundo.creaEstrella();
+					segundos=0.0;
+				} else{
+					
+					segundos = segundos + 0.040;
+					
+				}
+				fallos=miMundo.quitaYRotaEstrellas(6000);
+				cogidos = miMundo.choquesConEstrellas();
+				int puntuacion = cogidos*5;
 				
-				
-				
+				mensaje.setText( "  Atrapadas :                 " + cogidos + "    Puntuación :               " + puntuacion +"    Perdidas :               " + fallos );
+				if(fallos==10){
+					acaba();
+					JOptionPane.showMessageDialog(pPrincipal, "GAME OVER ", "Has dejado escapar 10 estrellas",JOptionPane.INFORMATION_MESSAGE);
+					pPrincipal.setVisible(false);						
+				}
 				
 				// Chequear choques
 				// (se comprueba tanto X como Y porque podría a la vez chocar en las dos direcciones (esquinas)

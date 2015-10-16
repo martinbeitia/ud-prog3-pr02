@@ -190,11 +190,12 @@ public class MundoJuego {
 				double posYEstrella = objetoEstrella.getPosY();
 				double posXCoche = miCoche.getPosX();
 				double posYCoche = miCoche.getPosY();
-				if(posXCoche == posXEstrella && posYCoche == posYEstrella){
+				if(posXCoche -posXEstrella >=-35 && posXCoche -posXEstrella <=35 && posYCoche -posYEstrella >=-35 && posYCoche -posYEstrella <=35 ){
+					choques++;
 					ListaEstrellas.remove(objetoEstrella);
 					panel.remove(objetoEstrella.getMiGrafico());
 					panel.repaint();
-					choques++;
+					
 	
 				} 
 			}
