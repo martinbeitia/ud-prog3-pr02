@@ -3,6 +3,9 @@ package ud.prog3.pr02;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -17,6 +20,12 @@ public class VentanaJuego extends JFrame {
 	MundoJuego miMundo;        // Mundo del juego
 	CocheJuego miCoche;        // Coche del juego
 	MiRunnable miHilo = null;  // Hilo del bucle principal de juego	
+	boolean[] booleanos;
+	JLabel estrellasAtrapadas;
+	JLabel estrellasDejadas;
+	int fallos = 0;
+	int cogidos = 0;
+	JPanel mensaje; 
 
 	/** Constructor de la ventana de juego. Crea y devuelve la ventana inicializada
 	 * sin coches dentro
@@ -26,53 +35,60 @@ public class VentanaJuego extends JFrame {
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		// Creación contenedores y componentes
 		pPrincipal = new JPanel();
-		JPanel pBotonera = new JPanel();
-		JButton bAcelerar = new JButton( "Acelera" );
-		JButton bFrenar = new JButton( "Frena" );
-		JButton bGiraIzq = new JButton( "Gira Izq." );
-		JButton bGiraDer = new JButton( "Gira Der." );
+		mensaje = new JPanel();
+		estrellasAtrapadas = new JLabel();
+		estrellasDejadas= new JLabel();
+		booleanos = new boolean[4];
+//		JPanel pBotonera = new JPanel();
+//		JButton bAcelerar = new JButton( "Acelera" );
+//		JButton bFrenar = new JButton( "Frena" );
+//		JButton bGiraIzq = new JButton( "Gira Izq." );
+//		JButton bGiraDer = new JButton( "Gira Der." );
 		// Formato y layouts
 		pPrincipal.setLayout( null );
 		pPrincipal.setBackground( Color.white );
 		// Añadido de componentes a contenedores
 		add( pPrincipal, BorderLayout.CENTER );
-		pBotonera.add( bAcelerar );
-		pBotonera.add( bFrenar );
-		pBotonera.add( bGiraIzq );
-		pBotonera.add( bGiraDer );
-		add( pBotonera, BorderLayout.SOUTH );
+//		pBotonera.add( bAcelerar );
+//		pBotonera.add( bFrenar );
+//		pBotonera.add( bGiraIzq );
+//		pBotonera.add( bGiraDer );
+//		add( pBotonera, BorderLayout.SOUTH );
 		// Formato de ventana
-		setSize( 1000, 750 );
+		mensaje.add(estrellasAtrapadas);
+		mensaje.add(estrellasDejadas);
+		add( mensaje, BorderLayout.SOUTH );
+		setSize( 500, 500 );
 		setResizable( false );
 		// Escuchadores de botones
-		bAcelerar.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				miCoche.acelera( +10, 1 );
-				// System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
-			}
-		});
-		bFrenar.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				miCoche.acelera( -10, 1 );
-				// System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
-			}
-		});
-		bGiraIzq.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				miCoche.gira( +10 );
-				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
-			}
-		});
-		bGiraDer.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				miCoche.gira( -10 );
-				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
-			}
-		});
+//		bAcelerar.addActionListener( new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				miCoche.acelera( +10, 1 );
+//				// System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
+//			}
+//		});
+//		bFrenar.addActionListener( new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				miCoche.acelera( -10, 1 );
+//				// System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
+//			}
+//		});
+//		bGiraIzq.addActionListener( new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				miCoche.gira( +10 );
+//				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
+//			}
+//		});
+//		bGiraDer.addActionListener( new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				miCoche.gira( -10 );
+//				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
+//			}
+//		});
 		
 		// Añadido para que también se gestione por teclado con el KeyListener
 		pPrincipal.addKeyListener( new KeyAdapter() {
@@ -80,24 +96,66 @@ public class VentanaJuego extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 					case KeyEvent.VK_UP: {
-						miCoche.acelera( +5, 1 );
+						
+						booleanos[0] = true;
+						
 						break;
 					}
 					case KeyEvent.VK_DOWN: {
-						miCoche.acelera( -5, 1 );
+						
+						
+						booleanos[1] = true;
+						
+						
 						break;
 					}
 					case KeyEvent.VK_LEFT: {
-						miCoche.gira( +10 );
+						
+							booleanos[2] = true;
+						
 						break;
 					}
 					case KeyEvent.VK_RIGHT: {
-						miCoche.gira( -10 );
+						
+							booleanos[3] = true;
+						
+						break;
+					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				switch (e.getKeyCode()) {
+					case KeyEvent.VK_UP: {
+						
+						booleanos[0] = false;
+						
+						break;
+					}
+					case KeyEvent.VK_DOWN: {
+						
+						
+						booleanos[1] = false;
+						
+						
+						break;
+					}
+					case KeyEvent.VK_LEFT: {
+						
+							booleanos[2] = false;
+						
+						break;
+					}
+					case KeyEvent.VK_RIGHT: {
+						
+							booleanos[3] = false;
+						
 						break;
 					}
 				}
 			}
 		});
+		
 		pPrincipal.setFocusable(true);
 		pPrincipal.requestFocus();
 		pPrincipal.addFocusListener( new FocusAdapter() {
@@ -150,9 +208,67 @@ public class VentanaJuego extends JFrame {
 		@Override
 		public void run() {
 			// Bucle principal forever hasta que se pare el juego...
+			double segundos=0;
+			estrellasDejadas.setText(estrellasDejadas.getText() + "Fallos = " + fallos );
+			estrellasAtrapadas.setText(estrellasAtrapadas.getText() + "Puntuación = " + cogidos );
+			
 			while (sigo) {
 				// Mover coche
 				miCoche.mueve( 0.040 );
+				fallos=miMundo.quitaYRotaEstrellas(6);
+				cogidos = miMundo.choquesConEstrellas();
+				
+				if(fallos==10){
+					acaba();
+					//custom title, custom icon
+					JOptionPane.showMessageDialog(pPrincipal, "GAME OVER", "Has dejado escapar 10 estrellas",JOptionPane.INFORMATION_MESSAGE);
+					pPrincipal.setVisible(false);						
+				}
+				
+				
+				if (segundos>=1.2){
+					
+					miMundo.creaEstrella();
+					miMundo.quitaYRotaEstrellas(6);
+					segundos=0.0;
+				} else{
+					
+					segundos = segundos + 0.040;
+					miMundo.quitaYRotaEstrellas(6);
+				}
+				double rozamiento = miMundo.calcFuerzaRozamiento(miCoche.getMasa(), miCoche.getCoefRozSuelo(), miCoche.getCoefRozAire(), miCoche.getVelocidad());
+
+				if(booleanos[0]==true){
+					miMundo.calcAceleracionConFuerza(miCoche.fuerzaAceleracionAdelante(), miCoche.getMasa());
+					miMundo.aplicarFuerza(miCoche.fuerzaAceleracionAdelante(), miCoche);
+					
+				}
+				if(booleanos[0]==false){
+					miMundo.calcAceleracionConFuerza(miCoche.fuerzaAceleracionAdelante(), miCoche.getMasa());
+					miMundo.aplicarFuerza(rozamiento, miCoche);
+					
+				}
+				if(booleanos[1]==true){
+					miMundo.calcAceleracionConFuerza(-miCoche.fuerzaAceleracionAtras(), miCoche.getMasa());
+					miMundo.aplicarFuerza(-miCoche.fuerzaAceleracionAtras(), miCoche);
+					
+				}
+				if(booleanos[1]==false){
+					miMundo.calcAceleracionConFuerza(miCoche.fuerzaAceleracionAdelante(), miCoche.getMasa());
+					miMundo.aplicarFuerza(rozamiento, miCoche);
+					
+				}
+				if(booleanos[2]==true){
+					miCoche.gira(+10);
+				}
+				if(booleanos[3]==true){
+					miCoche.gira(-10);
+				}
+				
+				
+				
+				
+				
 				// Chequear choques
 				// (se comprueba tanto X como Y porque podría a la vez chocar en las dos direcciones (esquinas)
 				if (miMundo.hayChoqueHorizontal(miCoche)) // Espejo horizontal si choca en X

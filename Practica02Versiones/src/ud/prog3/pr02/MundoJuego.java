@@ -1,5 +1,10 @@
 package ud.prog3.pr02;
 
+
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Random;
+
 import javax.swing.JPanel;
 
 /** "Mundo" del juego del coche.
@@ -11,7 +16,12 @@ import javax.swing.JPanel;
 public class MundoJuego {
 	private JPanel panel;  // panel visual del juego
 	CocheJuego miCoche;    // Coche del juego
-	
+	Estrella miEstrella;
+	JLabelEstrella grafico = new JLabelEstrella();
+	Random numero1 = new Random();
+	int quitadas=0;
+	int atrapadas=0;
+	ArrayList<Estrella> ListaEstrellas = new ArrayList<Estrella>();
 	/** Construye un mundo de juego
 	 * @param panel	Panel visual del juego
 	 */
@@ -108,4 +118,86 @@ public class MundoJuego {
 		return vel + (acel*tiempo);
 	}
 	
+	 public static double calcFuerzaRozamiento( double masa, double coefRozSuelo, double coefRozAire, double vel ) {
+		 double fuerzaRozamientoAire = coefRozAire * (-vel); // En contra del movimiento
+		 double fuerzaRozamientoSuelo = masa * coefRozSuelo * ((vel>0)?(-1):1); // Contra mvto
+		 return fuerzaRozamientoAire + fuerzaRozamientoSuelo;
+		 } 
+	 public static double calcAceleracionConFuerza( double fuerza, double masa ) {
+		 // 2ª ley de Newton: F = m*a ---> a = F/m
+		 return fuerza/masa;
+		 } 
+	 
+	 public static void aplicarFuerza( double fuerza, Coche coche ) {
+		 double fuerzaRozamiento = calcFuerzaRozamiento( Coche.masa ,
+		 Coche.coefRozSuelo, Coche.coefRozAire, coche.getVelocidad() );
+		 double aceleracion = calcAceleracionConFuerza( fuerza+fuerzaRozamiento, Coche.masa );
+		 if (fuerza==0) {
+		 // No hay fuerza, solo se aplica el rozamiento
+		 double velAntigua = coche.getVelocidad();
+		 coche.acelera( aceleracion, 0.04 );
+		 if (velAntigua>=0 && coche.getVelocidad()<0
+		 || velAntigua<=0 && coche.getVelocidad()>0) {
+		 coche.setVelocidad(0); // Si se está frenando, se para (no anda al revés)
+		 }
+		 } else {
+		 coche.acelera( aceleracion, 0.04 );
+		 } 
+	 }
+	 
+	 public void creaEstrella(){
+		  miEstrella = new Estrella();
+		  Date fecha = new Date();
+		  miEstrella.setPos(numero1.nextInt(500), numero1.nextInt(500));
+		  miEstrella.setFecha(fecha);
+		  panel.add(miEstrella.getMiGrafico());
+		  miEstrella.getMiGrafico().repaint();
+	 }
+	
+	 public int quitaYRotaEstrellas( long maxTiempo ){
+			
+			if(ListaEstrellas.size()>0){
+			for(int i=0; i<ListaEstrellas.size(); i++){
+				
+				Date ahora = new Date();
+				long tiempoTranscurrido = ahora.getTime() - ListaEstrellas.get(i).getFecha().getTime();
+				
+				if (tiempoTranscurrido > maxTiempo){	
+					ListaEstrellas.remove(i);
+					panel.remove(ListaEstrellas.get(i).getMiGrafico());
+					ListaEstrellas.get(i).getMiGrafico().repaint();
+					quitadas++;
+				}else{
+					
+					ListaEstrellas.get(i).getMiGrafico().setGiro(10);
+					ListaEstrellas.get(i).getMiGrafico().repaint();
+				}	
+				
+			}
+			}
+			
+			return quitadas;
+		}
+	 
+		public int choquesConEstrellas(){
+			int choques=0;
+
+			for(int i=0 ; i <ListaEstrellas.size(); i++){
+
+				Estrella objetoEstrella = new Estrella();
+				objetoEstrella= ListaEstrellas.get(i);
+				double posXEstrella = objetoEstrella.getPosX();
+				double posYEstrella = objetoEstrella.getPosY();
+				double posXCoche = miCoche.getPosX();
+				double posYCoche = miCoche.getPosY();
+				if(posXCoche == posXEstrella && posYCoche == posYEstrella){
+					ListaEstrellas.remove(objetoEstrella);
+					panel.remove(objetoEstrella.getMiGrafico());
+					panel.repaint();
+					choques++;
+	
+				} 
+			}
+			return choques;
+			}
 }

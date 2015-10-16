@@ -10,7 +10,11 @@ public class Coche {
 	protected double posX;  // Posición en X (horizontal)
 	protected double posY;  // Posición en Y (vertical)
 	protected String piloto;  // Nombre de piloto
-	
+	static double masa;
+	protected double fuerzabaseadelante;
+	protected double fuerzabaseatras;
+	static double coefRozAire;
+	static double coefRozSuelo;
 	// Constructores
 	
 	public Coche() {
@@ -18,6 +22,11 @@ public class Coche {
 		miDireccionActual = 0;
 		posX = 300;
 		posY = 300;
+		masa = 1;
+		fuerzabaseadelante = 2000;
+		fuerzabaseatras = 1000;
+		coefRozAire = 0.35;
+		coefRozSuelo = 15.5;
 	}
 	
 	/** Devuelve la velocidad actual del coche en píxeles por segundo
@@ -103,4 +112,72 @@ public class Coche {
 		return piloto + " (" + posX + "," + posY + ") - " +
 			   "Velocidad: " + miVelocidad + " ## Dirección: " + miDireccionActual; 
 	}
+	
+	/** Devuelve la fuerza de aceleración del coche, de acuerdo al motor definido en la práctica 2
+	 * @return Fuerza de aceleración en Newtixels
+	 */
+	 public double fuerzaAceleracionAdelante() {
+		 if (miVelocidad<=-150) return fuerzabaseadelante;
+		 else if (miVelocidad<=0)
+		 return fuerzabaseadelante*(-miVelocidad/150*0.5+0.5);
+		 else if (miVelocidad<=250)
+		 return fuerzabaseadelante*(miVelocidad/250*0.5+0.5);
+		 else if (miVelocidad<=750)
+		 return fuerzabaseadelante;
+		 else return fuerzabaseadelante*(-(miVelocidad-1000)/250);
+	 } 
+	 
+	 public double fuerzaAceleracionAtras() {
+		 if (miVelocidad<=-150) return fuerzabaseatras;
+		 else if (miVelocidad<=0)
+		 return fuerzabaseatras*(-miVelocidad/150*0.5+0.5);
+		 else if (miVelocidad<=250)
+		 return fuerzabaseatras*(miVelocidad/250*0.5+0.5);
+		 else if (miVelocidad<=750)
+		 return fuerzabaseatras;
+		 else return fuerzabaseatras*(-(miVelocidad-1000)/250);
+	 }
+
+	public static double getMasa() {
+		return masa;
+	}
+
+	public static void setMasa(double masa) {
+		Coche.masa = masa;
+	}
+
+	public static double getCoefRozAire() {
+		return coefRozAire;
+	}
+
+	public static void setCoefRozAire(double coefRozAire) {
+		Coche.coefRozAire = coefRozAire;
+	}
+
+	public static double getCoefRozSuelo() {
+		return coefRozSuelo;
+	}
+
+	public static void setCoefRozSuelo(double coefRozSuelo) {
+		Coche.coefRozSuelo = coefRozSuelo;
+	}
+
+	public double getFuerzabaseadelante() {
+		return fuerzabaseadelante;
+	}
+
+	public void setFuerzabaseadelante(double fuerzabaseadelante) {
+		this.fuerzabaseadelante = fuerzabaseadelante;
+	}
+
+	public double getFuerzabaseatras() {
+		return fuerzabaseatras;
+	}
+
+	public void setFuerzabaseatras(double fuerzabaseatras) {
+		this.fuerzabaseatras = fuerzabaseatras;
+	} 
+	 
+	 
+	 
 }
